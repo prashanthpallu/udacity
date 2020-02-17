@@ -62,7 +62,6 @@ Resources:
                   Ebs:
                     VolumeSize: '10'
             ImageId: ami-005bdb005fb00e791
-            KeyName: udacity
             InstanceType: t3.medium
             #IamInstanceProfile: "ProfileWithRolesForOurApp"
             SecurityGroups: 
@@ -82,7 +81,7 @@ Resources:
         Properties: 
             VPCZoneIdentifier:
             - Fn::ImportValue:
-                !Sub "${EnvironmentName}-PUB-NETS"
+                !Sub "${EnvironmentName}-PRI-NETS"
             LaunchConfigurationName:
                 Ref: WebAppLaunchConfig
             MinSize: '4'
@@ -108,7 +107,7 @@ Resources:
                 Ref: WebAppTargetGroup
             LoadBalancerArn:
                 Ref: WebAppLB
-            Port: 80
+            Port: '80'
             Protocol: HTTP
     ALBListenerRule:
         Type: AWS::ElasticLoadBalancingV2::ListenerRule
@@ -136,7 +135,9 @@ Resources:
                 Fn::ImportValue:
                     !Sub "${EnvironmentName}-VPCID"
 
-
-
-#Outputs: 
-#Bonus points for useful outputs!
+Outputs:
+    LoadBalancerDNS:
+        Description: The DNSName of the load Balancer
+        Value: !Join ['', [ 'http://', !GetAtt WebAppLB.DNSName]]
+        Export:
+            Name: !Sub ${EnvironmentName}-DNS
